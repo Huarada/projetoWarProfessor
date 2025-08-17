@@ -83,7 +83,7 @@ function App() {
                 <li><a href="https://www.britannica.com/science/game-theory/Two-person-constant-sum-games" className="hover:text-gray-900">Materiais para professores e educadores</a></li>
                 <li><a href="https://www.britannica.com/science/game-theory/Two-person-constant-sum-games" className="hover:text-gray-900">Artigos e tutoriais sobre Teoria dos Jogos</a></li>
                 <li><a href="https://discord.gg/bP8actFD" className="hover:text-gray-900">Comunidade (Discord)</a></li>
-                <li><a href="https://github.com/Huarada/JupyterNotebookAlgoritmoWar" className="hover:text-gray-900">Projeto (GitHub)</a></li>
+                <li><a href="https://github.com/Huarada/projetoWarProfessor" className="hover:text-gray-900">Projeto (GitHub)</a></li>
                 <li><a href="#licenseForOpenSource" className="hover:text-gray-900">Licença MIT e termos de uso</a></li>
                 <li><a href="https://www.linkedin.com/in/eng-lucas-harada/" className="hover:text-gray-900">Developers</a></li>
                 <li><a href="mailto:lucasharada@usp.br" className="hover:text-gray-900">Contato/Suporte oficial</a></li>
@@ -213,8 +213,8 @@ function App() {
             Gostaria de aprender mais sobre Algoritmos Genéticos e contribuir com nosso projeto Open-Source junto de outros desenvolvedores? Acesse nosso link do 
             github
           </p>
-          <p className="text-gray-700"><a href="https://github.com/Huarada/JupyterNotebookAlgoritmoWar" className="text-blue-600 hover:underline">
-            Link: https://github.com/Huarada/JupyterNotebookAlgoritmoWar
+          <p className="text-gray-700"><a href="https://github.com/Huarada/projetoWarProfessor" className="text-blue-600 hover:underline">
+            Link: https://github.com/Huarada/projetoWarProfessor
             </a>
           </p>
         </div>
