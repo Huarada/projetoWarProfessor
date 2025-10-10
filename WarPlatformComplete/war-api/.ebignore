@@ -1,0 +1,29 @@
+# Node/React frontend (não precisa subir junto com a API)
+war-platform/
+node_modules/
+**/node_modules/
+
+# Virtualenv local
+.venv/
+venv/
+ENV/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Arquivos temporários
+*.log
+*.sqlite3
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# IDE / Editor
+.idea/
+.vscode/
+
+
+!../war-platform/dist/**
