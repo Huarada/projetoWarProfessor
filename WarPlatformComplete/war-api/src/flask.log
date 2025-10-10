@@ -1,0 +1,39 @@
+nohup: ignoring input
+Iniciando servidor Flask para WAR Game API...
+Acesse http://localhost:5000 para a API
+ * Serving Flask app 'main'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://169.254.0.21:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 124-481-295
+127.0.0.1 - - [03/Aug/2025 19:27:48] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET /assets/index-DsVdlpu-.js HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET /assets/index-b8C5qjNS.css HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "[36mGET /assets/index-b8C5qjNS.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET /assets/world-map-jh4EBnhG.png HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET /assets/open-source-logo-DAXtq7C7.png HTTP/1.1" 200 -
+127.0.0.1 - - [03/Aug/2025 19:27:52] "GET /assets/war-logo-CydTCxCt.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET / HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/index-b8C5qjNS.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/index-DsVdlpu-.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/index-b8C5qjNS.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/war-logo-CydTCxCt.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/world-map-jh4EBnhG.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:52:28] "[36mGET /assets/open-source-logo-DAXtq7C7.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET /assets/index-BQjA04n6.js HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET /assets/index-b8C5qjNS.css HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET /assets/war-logo-CydTCxCt.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET /assets/world-map-jh4EBnhG.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "GET /assets/open-source-logo-DAXtq7C7.png HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:53:23] "[36mGET /assets/index-b8C5qjNS.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [06/Aug/2025 20:55:09] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:55:31] "POST /api/game/start HTTP/1.1" 200 -
+127.0.0.1 - - [06/Aug/2025 20:55:41] "POST /api/game/a5fbaf9f-8971-4367-a0c8-ab2a4d11addb/next-turn HTTP/1.1" 200 -
+127.0.0.1 - - [08/Aug/2025 16:04:20] "POST /api/game/a5fbaf9f-8971-4367-a0c8-ab2a4d11addb/analyze-move HTTP/1.1" 200 -
