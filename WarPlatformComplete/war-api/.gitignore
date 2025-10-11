@@ -3,3 +3,27 @@
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build e cache
+dist/
+build/
+.env
+
+# IDE e SO
+.vscode/
+.DS_Store
+Thumbs.db
