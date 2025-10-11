@@ -28,7 +28,7 @@ def analyze_move_with_gpt(game_state, last_action):
     for territory, info in game_state.get('territories', {}).items():
         player_id = info.get('dono')
         if player_id is not None:
-            player_name = f"Jogador {player_id + 1}"
+            player_name = f"Jogador {player_id}"
             if player_name not in table_configuration:
                 table_configuration[player_name] = []
             table_configuration[player_name].append(territory)
@@ -37,10 +37,13 @@ def analyze_move_with_gpt(game_state, last_action):
     attack_info = {}
     if last_action and last_action.get('type') == 'attack':
         player_id = last_action.get('player', 0)
-        attack_info[f"Jogador {player_id + 1}"] = [
-            last_action.get('from', 'Origem desconhecida'),
-            last_action.get('to', 'Destino desconhecido')
-        ]
+        attack_info = {
+            "jogador_que_atacou": f"Jogador {player_id}",
+            "origem": last_action.get("from", "Origem desconhecida"),
+            "destino": last_action.get("to", "Destino desconhecido"),
+            "sucesso": "Sim" if last_action.get("success", False) else "Não"
+        }
+
         attack_success = last_action.get('success', False)
         attack_info['sucesso'] = attack_success
     else:
@@ -69,6 +72,11 @@ Se possível, compare com alternativas que o jogador poderia ter feito e analise
 
 Sua resposta deve ser clara, objetiva e técnica.
 Não use mais de 300 palavras.
+
+Atenção:
+- Use apenas as informações da seção "Jogada analisada" para identificar quem executou a jogada.
+- O campo "jogador_que_atacou" representa o jogador que realizou a ação. 
+- O campo "current_player" no estado do jogo refere-se ao próximo jogador e não deve ser usado.
 
 Configuração atual do tabuleiro:
 {table_configuration}
