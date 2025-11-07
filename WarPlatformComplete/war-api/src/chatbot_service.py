@@ -49,11 +49,15 @@ def analyze_move_with_gpt(game_state, last_action):
     else:
         attack_info = {"Nenhum ataque realizado": "Jogador não atacou neste turno"}
 
-    prompt = f"""Você é um especialista em Teoria dos Jogos e Inteligência Artificial, com profundo conhecimento em jogos de estratégia como WAR. Sua função é analisar criticamente o estado de um tabuleiro de WAR fornecido pelo usuário e explicar, com base na Teoria dos Jogos, o raciocínio estratégico por trás de uma jogada específica que foi realizada.
+    prompt = prompt = f"""
+Você é um especialista em Teoria dos Jogos e Inteligência Artificial, com profundo conhecimento em jogos de estratégia como WAR. 
+Sua função é analisar criticamente o estado de um tabuleiro de WAR fornecido pelo usuário e explicar, com base na Teoria dos Jogos, 
+o raciocínio estratégico por trás de uma jogada específica que foi realizada.
 
-O jogo WAR é um jogo de estratégia onde os jogadores competem por territórios e continentes, utilizando tropas para atacar e defender. As decisões tomadas pelos jogadores são influenciadas por fatores como alianças, controle de territórios, e a dinâmica de poder entre os jogadores.
+O jogo WAR é um jogo de estratégia onde os jogadores competem por territórios e continentes, utilizando tropas para atacar e defender. 
+As decisões tomadas pelos jogadores são influenciadas por fatores como alianças, controle de territórios e a dinâmica de poder entre os jogadores.
 
-O objetivo é adquirir o máximo de territórios possíveis focando em dominar continentes e eliminar os adversários.
+O objetivo é adquirir o máximo de territórios possíveis, focando em dominar continentes e eliminar os adversários.
 
 Utilize conceitos como:  
 - Equilíbrio de Nash  
@@ -61,17 +65,24 @@ Utilize conceitos como:
 - Payoff esperado  
 - Risco versus recompensa  
 - Ameaças e alianças implícitas  
-- Controle de territórios críticos e fronteiras vulneráveis
+- Controle de territórios críticos e fronteiras vulneráveis  
 
-Não entre em loop ao gerar o texto, evite repetir o que já foi dito, e não gere texto desnecessário.
+Ao explicar os conceitos, use uma linguagem simples e educativa, como se estivesse ensinando alunos do ensino médio. 
+Sempre que mencionar um termo técnico, explique-o de forma intuitiva e com exemplos cotidianos.
 
 Instruções:  
-Analise a jogada descrita abaixo com base no estado atual do tabuleiro. Explique por que essa jogada pode ter sido feita, qual era o objetivo estratégico dela, e se essa foi uma decisão racional ou subótima, com base nos princípios da Teoria dos Jogos.
+Analise a jogada descrita abaixo com base no estado atual do tabuleiro. 
+Explique por que essa jogada pode ter sido feita, qual era o objetivo estratégico dela, e se foi uma decisão racional ou subótima, com base nos princípios da Teoria dos Jogos. 
+A explicação deve ter tom de professor e incentivar o aluno a refletir sobre o raciocínio por trás da jogada.
 
-Se possível, compare com alternativas que o jogador poderia ter feito e analise os possíveis desdobramentos estratégicos dessa ação.
+Se possível, compare com alternativas que o jogador poderia ter feito e analise os possíveis desdobramentos estratégicos dessa ação.  
+Mostre como diferentes decisões poderiam levar a resultados distintos.
 
-Sua resposta deve ser clara, objetiva e técnica.
+Sua resposta deve ser clara, educativa e acessível, evitando jargões técnicos e linguagem excessivamente matemática. 
+Use analogias simples quando possível (por exemplo, comparar defender um território a “fortalecer uma região antes de atacar”). 
 Não use mais de 300 palavras.
+
+Termine a explicação com uma breve reflexão ou pergunta guiada que estimule o aluno a pensar sobre o que faria diferente naquela situação.
 
 Atenção:
 - Use apenas as informações da seção "Jogada analisada" para identificar quem executou a jogada.
@@ -84,6 +95,7 @@ Configuração atual do tabuleiro:
 Jogada analisada:
 {attack_info}
 """
+
 
     try:
         response = openai.chat.completions.create(

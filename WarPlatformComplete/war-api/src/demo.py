@@ -7,47 +7,53 @@ from src.genetic_algorithm import GeneticAlgorithm
 from src.bot import WarBot
 from src.config import ESTRATEGIAS
 import time
-
+import random
 
 def demo_partida_individual():
     """Demonstra uma partida individual entre bots."""
     print("=" * 60)
     print("DEMONSTRAÇÃO: PARTIDA INDIVIDUAL")
     print("=" * 60)
-    
-    # Criar bots com diferentes estratégias
-    bots = [
-        WarBot(0, '000'),  # Pacifista absoluto
-        WarBot(1, '101'),  # Oportunista  
-        WarBot(2, '110'),  # Invasor moderado
-        WarBot(3, '111'),  # Caçador de bônus
-        WarBot(4, '100'),  # Expansão segura
-        WarBot(5, '010'),  # Fortaleza
-    ]
-    
+
+    # Função auxiliar interna para gerar genes híbridos de 9 bits
+    def gerar_gene_hibrido():
+        e1 = format(random.randint(0, 7), "03b")
+        e2 = format(random.randint(0, 7), "03b")
+        p = format(random.randint(0, 7), "03b")
+        return e1 + e2 + p
+
+    # Criar bots com genes híbridos
+    bots = [WarBot(i, gerar_gene_hibrido()) for i in range(6)]
+
     print("Bots participantes:")
     for bot in bots:
-        print(f"  Bot {bot.id}: {bot.estrategia} ({bot.gene})")
-    
+        e1 = bot.gene[:3]
+        e2 = bot.gene[3:6]
+        p_code = int(bot.gene[6:], 2) if len(bot.gene) == 9 else 7
+        prob = p_code / 7
+        print(f"  Bot {bot.id}: {bot.gene} → {e1}/{e2} @ p={prob:.2f}")
+
+
     print("\nSimulando partida...")
     start = time.time()
-    
+
     ag = GeneticAlgorithm()
     resultado = ag._simular_partida(bots)
-    
+
     end = time.time()
-    
+
     print(f"\nResultado da partida:")
     print(f"  Duração: {end-start:.3f} segundos")
     print(f"  Rodadas jogadas: {resultado['rodadas']}")
     print(f"  Vencedor: Bot {resultado['vencedor']} ({bots[resultado['vencedor']].estrategia})")
-    
+
     print(f"\nTerritórios finais:")
     for bot_id, territorios in resultado['territorios_finais'].items():
         bot = next(b for b in bots if b.id == bot_id)
         print(f"  {bot.estrategia}: {territorios} territórios")
-    
+
     return resultado
+
 
 
 def demo_algoritmo_genetico_rapido():

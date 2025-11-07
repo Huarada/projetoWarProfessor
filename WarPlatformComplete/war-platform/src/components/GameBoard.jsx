@@ -294,19 +294,59 @@ export default function GameBoard({ gameId, gameState, setGameState, onExit }) {
 
         <Panel title="Jogadores">
           <ul className="space-y-2">
-            {(gameState.players || []).map(p => (
-              <li key={p.id} className="flex items-center gap-2">
-                <span className="inline-block size-3 rounded-full" style={{ background: p.color }} />
-                <span className={cn('font-medium', p.eliminated && 'line-through opacity-60')}>
-                  #{p.id} — {p.is_human ? 'Você' : `gene ${p.gene}`}
-                </span>
-                <span className="ml-auto text-xs opacity-80">
-                  Territórios: {p.territories_count} · Tropas: {p.total_troops}
-                </span>
-              </li>
-            ))}
+            {(gameState.players || []).map(p => {
+              // Função para decodificar o gene (mesma lógica do backend)
+              const decodeGene = (gene) => {
+                if (!gene) return "Desconhecido";
+                if (gene.length === 9) {
+                  const e1 = gene.slice(0, 3);
+                  const e2 = gene.slice(3, 6);
+                  const pCode = parseInt(gene.slice(6), 2);
+                  const prob = (pCode / 7).toFixed(2);
+                  const estrategias = {
+                    "000": "Pacifista",
+                    "001": "Contra-golpe",
+                    "010": "Fortaleza",
+                    "011": "Retomada",
+                    "100": "Expansão segura",
+                    "101": "Oportunista",
+                    "110": "Invasor moderado",
+                    "111": "Caçador de bônus"
+                  };
+                  return `${gene} — ${estrategias[e1] || e1} vs ${estrategias[e2] || e2} (p=${prob})`;
+                } else if (gene.length === 3) {
+                  const estrategias = {
+                    "000": "Pacifista",
+                    "001": "Contra-golpe",
+                    "010": "Fortaleza",
+                    "011": "Retomada",
+                    "100": "Expansão segura",
+                    "101": "Oportunista",
+                    "110": "Invasor moderado",
+                    "111": "Caçador de bônus"
+                  };
+                  return `${gene} — ${estrategias[gene] || gene}`;
+                }
+                return gene;
+              };
+
+              return (
+                <li key={p.id} className="flex flex-col gap-1 border-b border-neutral-800 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block size-3 rounded-full" style={{ background: p.color }} />
+                    <span className={cn('font-medium', p.eliminated && 'line-through opacity-60')}>
+                      #{p.id} — {p.is_human ? 'Você' : decodeGene(p.gene)}
+                    </span>
+                  </div>
+                  <div className="text-xs opacity-80 pl-5">
+                    Territórios: {p.territories_count} · Tropas: {p.total_troops}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </Panel>
+
 
         {last && (
           <Panel title="Última ação">

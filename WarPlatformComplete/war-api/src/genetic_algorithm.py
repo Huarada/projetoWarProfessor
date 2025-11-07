@@ -26,15 +26,23 @@ class GeneticAlgorithm:
     def gerar_populacao_inicial(self):
         """Gera a população inicial de bots com genes aleatórios."""
         self.populacao = []
-        
+
+        # Função auxiliar para gerar um gene de 9 bits (E1 + E2 + P)
+        def gerar_gene_hibrido():
+            e1 = format(random.randint(0, 7), "03b")  # primeira estratégia
+            e2 = format(random.randint(0, 7), "03b")  # segunda estratégia
+            p = format(random.randint(0, 7), "03b")   # probabilidade relativa
+            return e1 + e2 + p
+
+        # Criação da população
         for i in range(NUM_INDIVIDUOS):
-            # Gera um gene aleatório de 3 bits
-            gene = ''.join(random.choice(['0', '1']) for _ in range(3))
+            gene = gerar_gene_hibrido()  # usa o gerador híbrido
             bot = WarBot(i, gene)
             self.populacao.append(bot)
-        
+
         print(f"População inicial gerada com {NUM_INDIVIDUOS} indivíduos")
         return self.populacao
+
     
     def avaliar_populacao(self):
         """Avalia a performance de cada bot na população."""
@@ -189,7 +197,7 @@ class GeneticAlgorithm:
             return pai1.gene, pai2.gene
         
         # Crossover de ponto único
-        ponto_corte = random.randint(1, 2)  # Para genes de 3 bits
+        ponto_corte = random.randint(1, len(pai1.gene) - 1)
         
         filho1 = pai1.gene[:ponto_corte] + pai2.gene[ponto_corte:]
         filho2 = pai2.gene[:ponto_corte] + pai1.gene[ponto_corte:]
@@ -202,7 +210,7 @@ class GeneticAlgorithm:
             return gene
         
         # Mutação de bit flip
-        posicao = random.randint(0, 2)  # Para genes de 3 bits
+        posicao = random.randint(0, len(gene) - 1)
         gene_lista = list(gene)
         gene_lista[posicao] = '1' if gene_lista[posicao] == '0' else '0'
         

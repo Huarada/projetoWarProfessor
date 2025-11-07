@@ -6,7 +6,7 @@ export default function NavBar({ onStart, disabled }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="bg-gray-400 border-b border-gray-200">
+    <header className="fixed top-0 left-0 w-full z-50 bg-gray-400 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* Logo */}
@@ -25,7 +25,12 @@ export default function NavBar({ onStart, disabled }) {
           >
             Patreon
           </a>
-          <span className="hover:text-white/90 cursor-default">Home</span>
+          <a href="/" className="hover:text-white/90">Home</a>
+          <a href="https://pt.khanacademy.org/economics-finance-domain/microeconomics/perfect-competition-topic/game-theory/v/prisoners-dilemma-and-nash-equilibrium" className="hover:text-white/90">Aprenda Estratégia</a>
+          <a href="https://discord.gg/jztUsSA9wX" className="hover:text-white/90">Comunidade</a>
+          <a href="#sobrePlataforma" className="hover:text-white/90">Sobre</a>
+          <a href="mailto:lucasharada@usp.br" className="hover:text-white/90">Contato</a>
+
           {/* Iniciar jogo normal (só bots) */}
           <button
             onClick={async () => {
@@ -50,11 +55,6 @@ export default function NavBar({ onStart, disabled }) {
           >
             🎮 Modo Jogador
           </button>
-
-          <span className="hover:text-white/90 cursor-default">Aprenda Estratégia</span>
-          <span className="hover:text-white/90 cursor-default">Comunidade</span>
-          <span className="hover:text-white/90 cursor-default">Sobre</span>
-          <span className="hover:text-white/90 cursor-default">Contato</span>
         </nav>
 
         {/* Botões Sign in / Register (desktop) */}

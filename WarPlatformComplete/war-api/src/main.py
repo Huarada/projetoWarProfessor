@@ -2,7 +2,7 @@
 """
 Servidor Flask para a API do jogo WAR.
 """
-
+import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import uuid
@@ -71,27 +71,43 @@ class GameSession:
 
     def initialize_game(self):
         """Inicializa uma nova partida com 6 bots (padrão)."""
-        self.bots = [
-            WarBot(0, '000'),  # Pacifista absoluto
-            WarBot(1, '101'),  # Oportunista
-            WarBot(2, '110'),  # Invasor moderado
-            WarBot(3, '111'),  # Caçador de bônus
-            WarBot(4, '100'),  # Expansão segura
-            WarBot(5, '010'),  # Fortaleza
-        ]
+
+        import random
+
+        # Função auxiliar interna — gera gene de 9 bits (E1 + E2 + P)
+        def gerar_gene_hibrido():
+            e1 = format(random.randint(0, 7), "03b")
+            e2 = format(random.randint(0, 7), "03b")
+            p = format(random.randint(0, 7), "03b")
+            return e1 + e2 + p
+
+        # Cria os 6 bots com genes híbridos
+        self.bots = [WarBot(i, gerar_gene_hibrido()) for i in range(6)]
+
+        # Mantém o fluxo normal de inicialização
         self._init_state_common()
 
+
     def initialize_with_human(self):
-        """Inicializa uma nova partida com o jogador humano no id=0 + 5 bots."""
-        self.bots = [
-            HumanPlayer(0),
-            WarBot(1, '101'),
-            WarBot(2, '110'),
-            WarBot(3, '111'),
-            WarBot(4, '100'),
-            WarBot(5, '010'),
-        ]
+        """Inicializa uma nova partida com o jogador humano no id=0 + 5 bots híbridos."""
+        import random
+
+        # Função auxiliar: gera gene de 9 bits (E1 + E2 + P)
+        def gerar_gene_hibrido():
+            e1 = format(random.randint(0, 7), "03b")
+            e2 = format(random.randint(0, 7), "03b")
+            p = format(random.randint(0, 7), "03b")
+            return e1 + e2 + p
+
+        # Jogador humano (id 0)
+        humano = HumanPlayer(0)
+
+        # Cria 5 bots com genes híbridos
+        bots = [WarBot(i, gerar_gene_hibrido()) for i in range(1, 6)]
+
+        self.bots = [humano] + bots
         self._init_state_common()
+
 
     def _init_state_common(self):
         """Inicialização comum do tabuleiro/estado."""
@@ -478,18 +494,40 @@ def player_action():
 
     try:
         if action == "deploy":
-            territorio = params.get('territorio')
+            import unicodedata
+
+            territorio_raw = params.get('territorio', '').strip()
             qtd = int(params.get('tropas', 1))
             disponiveis = game_session.game_state.tropas_disponiveis.get(player_id, 0)
 
-            if not territorio:
+            if not territorio_raw:
                 return jsonify({"error": "Território não informado"}), 400
             if qtd <= 0:
                 return jsonify({"error": "Quantidade inválida"}), 400
             if qtd > disponiveis:
                 return jsonify({"error": f"Você só tem {disponiveis} tropas disponíveis"}), 400
 
-            # adiciona tropas e atualiza saldo
+            # Normaliza acentos e letras (case + accent insensitive)
+            def normalizar_nome(nome):
+                return ''.join(
+                    c for c in unicodedata.normalize('NFD', nome)
+                    if unicodedata.category(c) != 'Mn'
+                ).lower()
+
+            territorio_normalizado = normalizar_nome(territorio_raw)
+
+            # Mapeia nomes normalizados -> nomes reais
+            correspondencias = {
+                normalizar_nome(t): t for t in gs.territorios.keys()
+            }
+            territorio = correspondencias.get(territorio_normalizado)
+
+            if not territorio:
+                return jsonify({
+                    "error": f"Território '{territorio_raw}' não encontrado."
+                }), 400
+
+            # Adiciona tropas e atualiza saldo
             GameLogic.adicionar_tropas(gs, player_id, territorio, qtd)
             game_session.game_state.tropas_disponiveis[player_id] -= qtd
 
@@ -500,9 +538,7 @@ def player_action():
                 "remaining": game_session.game_state.tropas_disponiveis[player_id],
                 "state": game_session.get_state_dict()
             }), 200
-
-
-
+        
 
         elif action == "attack":
             origem = params.get('origem')
