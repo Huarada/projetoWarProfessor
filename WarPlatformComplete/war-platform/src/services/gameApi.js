@@ -7,15 +7,33 @@ async function req(path, opts) {
   return r.json()
 }
 
-export async function startGame() {
-  return req('/game/start', {
+// nova versão genérica do startGame
+export const startGame = (opts = {}) =>
+  req('/game/start', {
     method: 'POST',
     body: JSON.stringify({
-      auto_play: false,  // ou true, se quiser autoplay
-      speed: 'normal'    // pode ser 'slow', 'normal' ou 'fast'
-    })
+      auto_play: false,
+      speed: 'normal',
+      ...opts   // ← isso permite incluir parâmetros extras, como include_human: true
+    }),
   })
-}
+
+
+// helper: ação do jogador humano (deploy, attack, fortify)
+export const playerAction = (game_id, action, params) =>
+  req('/player/action', {
+    method: 'POST',
+    body: JSON.stringify({ game_id, action, params }),
+  })
+
+// helper: encerrar turno do humano
+export const endTurn = (game_id) =>
+  req('/player/end-turn', {
+    method: 'POST',
+    body: JSON.stringify({ game_id }),
+  })
+
+
 
 export async function nextTurn(gameId) {
   return req(`/game/${gameId}/next-turn`, { method: 'POST' })

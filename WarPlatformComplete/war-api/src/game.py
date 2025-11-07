@@ -18,43 +18,49 @@ class GameState:
         self.jogadores = []
         self.rodada_atual = 0
         self.historico_perdas = {}  # Para rastrear se um jogador perdeu território na rodada anterior
+        self.tropas_disponiveis = {}  # ← novo: tropas ainda não distribuídas
         
     def inicializar_tabuleiro(self, jogadores):
         """Inicializa o tabuleiro com territórios e jogadores."""
         self.jogadores = jogadores
-        
+
         # Inicializar todos os territórios
         for territorio in TERRITORIOS:
             self.territorios[territorio] = {
                 'dono': None,
                 'tropas': 0
             }
-        
+
+        # Inicializar contador de tropas disponíveis para cada jogador
+        for jogador in jogadores:
+            self.tropas_disponiveis[jogador.id] = 0
+
         # Distribuir territórios aleatoriamente entre os jogadores
         territorios_embaralhados = TERRITORIOS.copy()
         random.shuffle(territorios_embaralhados)
-        
+
         for i, territorio in enumerate(territorios_embaralhados):
             jogador = jogadores[i % len(jogadores)]
             self.territorios[territorio]['dono'] = jogador.id
             self.territorios[territorio]['tropas'] = 1  # Cada território começa com 1 tropa
-        
+
         # Distribuir tropas restantes
         tropas_restantes_por_jogador = TROPAS_INICIAIS_POR_JOGADOR - (len(TERRITORIOS) // len(jogadores))
-        
+
         for jogador in jogadores:
             meus_territorios = self.get_territorios_jogador(jogador.id)
             tropas_restantes = tropas_restantes_por_jogador
-            
+
             # Distribuir tropas restantes aleatoriamente
             while tropas_restantes > 0:
                 territorio = random.choice(meus_territorios)
                 self.territorios[territorio]['tropas'] += 1
                 tropas_restantes -= 1
-        
+
         # Inicializar histórico de perdas
         for jogador in jogadores:
             self.historico_perdas[jogador.id] = False
+
     
     def get_territorios_jogador(self, jogador_id):
         """Retorna lista de territórios pertencentes ao jogador."""
@@ -176,7 +182,36 @@ class GameLogic:
             # Ataque falhou - atacante perde 1 tropa
             game_state.territorios[origem]['tropas'] -= 1
             return False
-    
+
+    @staticmethod
+    def adicionar_tropas(game_state, jogador_id, territorio, qtd):
+        """
+        Adiciona tropas ao território de um jogador durante a fase de reforço.
+        - O território deve pertencer ao jogador.
+        - A quantidade deve ser positiva e não ultrapassar o saldo disponível.
+        - Atualiza o estado do jogo.
+        """
+        if territorio not in game_state.territorios:
+            raise ValueError(f"O território {territorio} não existe.")
+
+        info = game_state.territorios[territorio]
+        if info['dono'] != jogador_id:
+            raise ValueError(f"O território {territorio} não pertence ao jogador.")
+
+        if qtd <= 0:
+            raise ValueError("A quantidade de tropas deve ser positiva.")
+
+        # Verifica saldo disponível no turno
+        disponiveis = game_state.tropas_disponiveis.get(jogador_id, 0)
+        if qtd > disponiveis:
+            raise ValueError(
+                f"Você não pode adicionar {qtd} tropas — saldo disponível: {disponiveis}."
+            )
+
+        # Adiciona tropas e atualiza saldo
+        info['tropas'] += qtd
+        game_state.tropas_disponiveis[jogador_id] = disponiveis - qtd
+
     @staticmethod
     def territorios_conectados(game_state, origem, meus_territorios):
         """Retorna todos territórios conectados à origem usando BFS."""
@@ -263,3 +298,35 @@ class GameLogic:
         """Verifica se um jogador foi eliminado (não possui territórios)."""
         return len(game_state.get_territorios_jogador(jogador_id)) == 0
 
+    @staticmethod
+    def mover_tropas(game_state, jogador_id, origem, destino, qtd):     #codigo que implementa realocar tropas do jogador humano
+        """
+        Move tropas entre dois territórios do mesmo jogador.
+        Regras:
+        - Ambos os territórios devem pertencer ao mesmo jogador.
+        - Não pode deixar o território de origem com menos de 1 tropa.
+        - Deve existir um caminho válido (vizinhança direta ou conectada).
+        """
+        from src.config import MAPA_WAR  # importa o mapa de conexões
+
+        # valida propriedade
+        if (
+            game_state.territorios[origem]['dono'] != jogador_id
+            or game_state.territorios[destino]['dono'] != jogador_id
+        ):
+            raise ValueError("Só é possível mover tropas entre territórios do mesmo jogador.")
+
+        # valida quantidade
+        tropas_origem = game_state.territorios[origem]['tropas']
+        if qtd <= 0 or tropas_origem <= 1:
+            raise ValueError("Não há tropas suficientes para mover.")
+        if qtd >= tropas_origem:
+            raise ValueError("Não é permitido mover todas as tropas — deve sobrar ao menos 1.")
+
+        # verifica conexão (direta)
+        if destino not in MAPA_WAR.get(origem, []):
+            raise ValueError(f"{destino} não é vizinho de {origem}.")
+
+        # efetua movimentação
+        game_state.territorios[origem]['tropas'] -= qtd
+        game_state.territorios[destino]['tropas'] += qtd

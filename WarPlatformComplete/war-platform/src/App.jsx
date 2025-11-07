@@ -8,6 +8,8 @@ import openSourceLogo from './assets/open-source-logo.png'
 import './App.css'
 import GameBoard from '@/components/GameBoard.jsx'
 import { startGame } from '@/services/gameApi'
+import NavBar from '@/components/NavBar'
+
 
 function App() {
   const [gameId, setGameId] = useState(null)
@@ -37,53 +39,13 @@ function App() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <img src={warLogo} alt="WAR Logo" className="h-12 w-12" />
-            </div>
-
-            {/* Navigation (links apenas) */}
-        <nav className="hidden md:flex space-x-8">
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                <a
-                  href="https://patreon.com/Huarada?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-              Patreon
-                </a>
-              </Button>
-              <a href="#mapaMundial" className="text-gray-700 hover:text-gray-900 px-3 py-2">Home</a>
-              <a href="https://github.com/Huarada/JupyterNotebookAlgoritmoWar" className="text-gray-700 hover:text-gray-900 px-3 py-2">Aprenda Estratégia</a>
-              <a href="https://discord.gg/xQw4dmhX" className="text-gray-700 hover:text-gray-900 px-3 py-2">Comunidade</a>
-              <a href="#sobrePlataforma" className="text-gray-700 hover:text-gray-900 px-3 py-2">Sobre</a>
-              <a href="mailto:lucasharada@usp.br" className="text-gray-700 hover:text-gray-900 px-3 py-2">Contato</a>
-            </nav>
-
-
-
-            {/* Auth buttons */}
-            {/* Auth + Iniciar jogo */}
-            <div className="flex space-x-2">
-              <Button
-                onClick={async () => {
-                  const { game_id, state } = await startGame()
-                  setGameId(game_id)
-                  setGameState(state)
-                }}
-                className="bg-green-500 hover:bg-green-600 text-white"
-              >
-                Iniciar Jogo
-              </Button>
-              <Button variant="outline">Sign in</Button>
-              <Button className="bg-gray-800 hover:bg-gray-900 text-white">Register</Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <NavBar
+        onStart={(game_id, state) => {
+          setGameId(game_id)
+          setGameState(state)
+        }}
+        disabled={!!gameId}
+      />
 
       {/* World Map Section */}
       <section className="bg-black py-8">
@@ -122,7 +84,7 @@ function App() {
               <ul className="space-y-2 text-gray-700">
                 <li><a href="https://www.britannica.com/science/game-theory/Two-person-constant-sum-games" className="hover:text-gray-900">Materiais para professores e educadores</a></li>
                 <li><a href="https://www.britannica.com/science/game-theory/Two-person-constant-sum-games" className="hover:text-gray-900">Artigos e tutoriais sobre Teoria dos Jogos</a></li>
-                <li><a href="https://discord.gg/xQw4dmhX" className="hover:text-gray-900">Comunidade (Discord)</a></li>
+                <li><a href="https://discord.gg/jztUsSA9wX" className="hover:text-gray-900">Comunidade (Discord)</a></li>
                 <li><a href="https://github.com/Huarada/projetoWarProfessor" className="hover:text-gray-900">Projeto (GitHub)</a></li>
                 <li><a href="#licenseForOpenSource" className="hover:text-gray-900">Licença MIT e termos de uso</a></li>
                 <li><a href="https://www.linkedin.com/in/eng-lucas-harada/" className="hover:text-gray-900">Developers</a></li>
@@ -211,7 +173,7 @@ function App() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-8">COMUNIDADE</h2>
           <p className="text-gray-700 mb-4">Interaja com outros entusiastas de WAR, e com contribuidores do código Open-Source em nossa comunidade do Discord</p>
-          <p className="text-gray-700"><a href="https://discord.gg/VbArWes9" className="text-blue-600 hover:underline">link: https://discord.gg/VbArWes9</a></p>
+          <p className="text-gray-700"><a href="https://discord.gg/jztUsSA9wX" className="text-blue-600 hover:underline">link: https://discord.gg/jztUsSA9wX</a></p>
         </div>
       </section>
 

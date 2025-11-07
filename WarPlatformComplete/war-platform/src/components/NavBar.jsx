@@ -1,16 +1,17 @@
 import { useState } from "react"
 import { startGame } from '@/services/gameApi'
+import warLogo from '@/assets/war-logo.png'
 
 export default function NavBar({ onStart, disabled }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 bg-neutral-800/90 backdrop-blur border-b border-neutral-700">
+    <header className="bg-gray-400 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <img src="/src/assets/logo.png" alt="WAR Professor" className="h-10 w-10" />
+          <img src={warLogo} alt="WAR Professor" className="h-10 w-10" />
           <span className="sr-only">WAR Professor</span>
         </div>
 
@@ -25,6 +26,7 @@ export default function NavBar({ onStart, disabled }) {
             Patreon
           </a>
           <span className="hover:text-white/90 cursor-default">Home</span>
+          {/* Iniciar jogo normal (só bots) */}
           <button
             onClick={async () => {
               const { game_id, state } = await startGame()
@@ -33,8 +35,22 @@ export default function NavBar({ onStart, disabled }) {
             disabled={disabled}
             className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
           >
-            Iniciar jogo
+            Iniciar Jogo
           </button>
+
+          {/* Novo botão: modo jogador humano */}
+          <button
+            onClick={async () => {
+              const { game_id, state } = await startGame({ include_human: true })
+              onStart(game_id, state)
+            }}
+            disabled={disabled}
+            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+            title="Jogue controlando o primeiro jogador humano"
+          >
+            🎮 Modo Jogador
+          </button>
+
           <span className="hover:text-white/90 cursor-default">Aprenda Estratégia</span>
           <span className="hover:text-white/90 cursor-default">Comunidade</span>
           <span className="hover:text-white/90 cursor-default">Sobre</span>
@@ -50,22 +66,37 @@ export default function NavBar({ onStart, disabled }) {
 
         {/* Botão fixo no mobile (sempre visível) */}
         <div className="flex md:hidden">
-          <button
-            onClick={async () => {
-              const { game_id, state } = await startGame()
-              onStart(game_id, state)
-            }}
-            disabled={disabled}
-            className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
-          >
-            Iniciar jogo
-          </button>
+        {/* Iniciar jogo normal (só bots) */}
+        <button
+          onClick={async () => {
+            const { game_id, state } = await startGame()
+            onStart(game_id, state)
+          }}
+          disabled={disabled}
+          className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+        >
+          Iniciar Jogo
+        </button>
+
+        {/* Novo botão: modo jogador humano */}
+        <button
+          onClick={async () => {
+            const { game_id, state } = await startGame({ include_human: true })
+            onStart(game_id, state)
+          }}
+          disabled={disabled}
+          className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+          title="Jogue controlando o primeiro jogador humano"
+        >
+          🎮 Modo Jogador
+        </button>
+
         </div>
 
 
         {/* Botão hamburguer (apenas mobile) */}
         <button
-          className="md:hidden px-3 py-2 rounded-md text-white hover:bg-neutral-700"
+          className="md:hidden px-3 py-2 rounded-md text-white bg-silver-500/90 hover:bg-neutral-700"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? "✖" : "☰"}
@@ -74,7 +105,7 @@ export default function NavBar({ onStart, disabled }) {
 
       {/* Menu mobile */}
       {menuOpen && (
-        <div className="md:hidden flex flex-col items-center gap-3 p-4 bg-neutral-900 text-sm border-t border-neutral-700">
+        <div className="md:hidden flex flex-col items-center gap-3 p-4 bg-neutral-900 text-white border-t border-neutral-700 shadow-lg">
           <a
             className="px-3 py-1 rounded-full bg-orange-500/90 hover:bg-orange-500 font-medium"
             href="https://patreon.com/Huarada"
@@ -83,7 +114,8 @@ export default function NavBar({ onStart, disabled }) {
           >
             Patreon
           </a>
-          <span className="hover:text-white/90 cursor-default">Home</span>
+          <span className="hover:text-orange-400 cursor-default">Home</span>
+
           <button
             onClick={async () => {
               const { game_id, state } = await startGame()
@@ -92,18 +124,36 @@ export default function NavBar({ onStart, disabled }) {
             disabled={disabled}
             className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
           >
-            Iniciar jogo
+            Iniciar Jogo
           </button>
-          <span className="hover:text-white/90 cursor-default">Aprenda Estratégia</span>
-          <span className="hover:text-white/90 cursor-default">Comunidade</span>
-          <span className="hover:text-white/90 cursor-default">Sobre</span>
-          <span className="hover:text-white/90 cursor-default">Contato</span>
+
+          <button
+            onClick={async () => {
+              const { game_id, state } = await startGame({ include_human: true })
+              onStart(game_id, state)
+            }}
+            disabled={disabled}
+            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+          >
+            🎮 Modo Jogador
+          </button>
+
+          <span className="hover:text-orange-400 cursor-default">Aprenda Estratégia</span>
+          <span className="hover:text-orange-400 cursor-default">Comunidade</span>
+          <span className="hover:text-orange-400 cursor-default">Sobre</span>
+          <span className="hover:text-orange-400 cursor-default">Contato</span>
+
           <div className="flex gap-2 mt-2">
-            <button className="px-3 py-1 rounded-md border border-neutral-600 hover:bg-neutral-700">Sign in</button>
-            <button className="px-3 py-1 rounded-md bg-neutral-100 text-neutral-900 hover:bg-white">Register</button>
+            <button className="px-3 py-1 rounded-md border border-neutral-500 hover:bg-neutral-800">
+              Sign in
+            </button>
+            <button className="px-3 py-1 rounded-md bg-neutral-200 text-neutral-900 hover:bg-neutral-300">
+              Register
+            </button>
           </div>
         </div>
       )}
+
     </header>
   )
 }
