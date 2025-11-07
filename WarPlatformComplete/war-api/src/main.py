@@ -152,7 +152,7 @@ class GameSession:
         GameLogic.distribuir_tropas(self.game_state, current_bot.id, tropas_recebidas)
 
         # Fase 2: Atacar
-        max_ataques = 10
+        max_ataques = 5
         ataques_realizados = 0
         last_attack = None
 
@@ -211,7 +211,7 @@ class GameSession:
             # se for o humano, calcular tropas recebidas
             if self.is_human_turn():
                 tropas = GameLogic.calcular_unidades_recebidas(self.game_state, 0)
-                self.game_state.tropas_disponiveis[0] += tropas
+                self.game_state.tropas_disponiveis[0] += tropas + 3 # bônus inicial para facilitar o jogo do usuario
 
 
     def _save_state_to_history(self):
