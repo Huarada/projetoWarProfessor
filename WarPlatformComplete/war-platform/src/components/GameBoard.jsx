@@ -143,26 +143,32 @@ export default function GameBoard({ gameId, gameState, setGameState, onExit }) {
       {/* Coluna do mapa */}
       <section className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <ControlButton
-              onClick={async () => {
-                const territorio = prompt('Digite o nome do território onde quer colocar tropas:')
-                const tropas = parseInt(prompt('Quantas tropas deseja colocar?'), 10)
-                if (!territorio || !tropas) return
-                try {
-                  setLoading(true)
-                  const res = await playerAction(gameId, 'deploy', { territorio, tropas })
-                  setGameState(res.state ?? res)
-                  alert(`Tropas colocadas em ${territorio}. Restam ${res.remaining ?? '0'} tropas.`)
-                } catch (err) {
-                  alert(err.message || 'Erro ao distribuir tropas.')
-                } finally {
-                  setLoading(false)
-                }
-              }}
-              intent="primary"
-            >
-              ➕ Distribuir Tropas
-          </ControlButton>
+          {gameState?.human_turn &&
+            gameState?.current_round > 1 &&
+            (gameState?.tropas_disponiveis?.[0] ?? 0) > 0 && (
+              <ControlButton
+                onClick={async () => {
+                  const territorio = prompt('Digite o nome do território onde quer colocar tropas:')
+                  const tropas = parseInt(prompt('Quantas tropas deseja colocar?'), 10)
+                  if (!territorio || !tropas) return
+                  try {
+                    setLoading(true)
+                    const res = await playerAction(gameId, 'deploy', { territorio, tropas })
+                    setGameState(res.state ?? res)
+                    alert(`Tropas colocadas em ${territorio}. Restam ${res.remaining ?? '0'} tropas.`)
+                  } catch (err) {
+                    alert(err.message || 'Erro ao distribuir tropas.')
+                  } finally {
+                    setLoading(false)
+                  }
+                }}
+                intent="primary"
+              >
+                ➕ Distribuir Tropas
+              </ControlButton>
+          )}
+
+
 
           <ControlButton
             onClick={async () => {

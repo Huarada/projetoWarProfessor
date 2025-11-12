@@ -31,16 +31,16 @@ export default function NavBar({ onStart, disabled }) {
           <a href="#sobrePlataforma" className="hover:text-white/90">Sobre</a>
           <a href="mailto:lucasharada@usp.br" className="hover:text-white/90">Contato</a>
 
-          {/* Iniciar jogo normal (só bots) */}
+          {/* assistir bots jogando (só bots) */}
           <button
             onClick={async () => {
               const { game_id, state } = await startGame()
               onStart(game_id, state)
             }}
             disabled={disabled}
-            className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
           >
-            Iniciar Jogo
+            Assistir Bots
           </button>
 
           {/* Novo botão: modo jogador humano */}
@@ -50,10 +50,10 @@ export default function NavBar({ onStart, disabled }) {
               onStart(game_id, state)
             }}
             disabled={disabled}
-            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
             title="Jogue controlando o primeiro jogador humano"
           >
-            🎮 Modo Jogador
+            🎮 Iniciar Jogo
           </button>
         </nav>
 
@@ -66,16 +66,16 @@ export default function NavBar({ onStart, disabled }) {
 
         {/* Botão fixo no mobile (sempre visível) */}
         <div className="flex md:hidden">
-        {/* Iniciar jogo normal (só bots) */}
+        {/* assistir bots jogando (só bots) */}
         <button
           onClick={async () => {
             const { game_id, state } = await startGame()
             onStart(game_id, state)
           }}
           disabled={disabled}
-          className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+          className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
         >
-          Iniciar Jogo
+          Assistir Bots
         </button>
 
         {/* Novo botão: modo jogador humano */}
@@ -85,10 +85,10 @@ export default function NavBar({ onStart, disabled }) {
             onStart(game_id, state)
           }}
           disabled={disabled}
-          className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+          className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
           title="Jogue controlando o primeiro jogador humano"
         >
-          🎮 Modo Jogador
+          🎮 Iniciar Jogo
         </button>
 
         </div>
@@ -105,7 +105,8 @@ export default function NavBar({ onStart, disabled }) {
 
       {/* Menu mobile */}
       {menuOpen && (
-        <div className="md:hidden flex flex-col items-center gap-3 p-4 bg-neutral-900 text-white border-t border-neutral-700 shadow-lg">
+          <div className="md:hidden fixed top-16 left-0 w-full flex flex-col items-center gap-3 p-4 bg-neutral-900 text-white border-t border-neutral-700 shadow-lg z-40 overflow-x-hidden">
+
           <a
             className="px-3 py-1 rounded-full bg-orange-500/90 hover:bg-orange-500 font-medium"
             href="https://patreon.com/Huarada"
@@ -122,9 +123,9 @@ export default function NavBar({ onStart, disabled }) {
               onStart(game_id, state)
             }}
             disabled={disabled}
-            className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
           >
-            Iniciar Jogo
+            Assistir Bots
           </button>
 
           <button
@@ -133,9 +134,9 @@ export default function NavBar({ onStart, disabled }) {
               onStart(game_id, state)
             }}
             disabled={disabled}
-            className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+            className="px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50"
           >
-            🎮 Modo Jogador
+            🎮 Iniciar Jogo
           </button>
 
           <span className="hover:text-orange-400 cursor-default">Aprenda Estratégia</span>

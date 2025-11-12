@@ -8,6 +8,17 @@ from flask_cors import CORS
 import uuid
 from datetime import datetime
 import os
+import pickle
+from redis import Redis
+
+redis_client = Redis(
+    host=os.environ.get("REDIS_HOST", "localhost"),
+    port=int(os.environ.get("REDIS_PORT", 6379)),
+    password=os.environ.get("REDIS_PASS", None),
+    ssl=os.environ.get("REDIS_SSL", "false").lower() == "true" and not os.environ.get("LOCAL_DEV"),
+    decode_responses=False
+)
+
 
 # Importar módulos do jogo WAR
 from src.bot import WarBot
@@ -30,7 +41,32 @@ def serve_index():
 
 
 # Armazenar jogos ativos
-active_games = {}
+import pickle
+
+# Funções utilitárias para salvar/carregar sessões
+def save_game_session(game_id, session):
+    try:
+        redis_client.setex(f"game:{game_id}", 86400, pickle.dumps(session))  # expira em 24h
+    except Exception as e:
+        print(f"[Redis] Falha ao salvar jogo {game_id}: {e}")
+
+def load_game_session(game_id):
+    try:
+        data = redis_client.get(f"game:{game_id}")
+        if data:
+            return pickle.loads(data)
+        return None
+    except Exception as e:
+        print(f"[Redis] Falha ao carregar jogo {game_id}: {e}")
+        return None
+
+def delete_game_session(game_id):
+    try:
+        redis_client.delete(f"game:{game_id}")
+    except Exception as e:
+        print(f"[Redis] Falha ao deletar jogo {game_id}: {e}")
+
+
 
 # Cores para os jogadores
 PLAYER_COLORS = [
@@ -263,7 +299,9 @@ class GameSession:
             "territories": self.game_state.territorios,
             "players": players_info,
             "last_action": self.last_action,
-            "total_turns": len(self.history)
+            "total_turns": len(self.history),
+            "tropas_disponiveis": getattr(self.game_state, "tropas_disponiveis", {}),
+
         }
 
 
@@ -297,7 +335,8 @@ def start_game():
         game_session.initialize_game()
 
     # Armazenar sessão
-    active_games[game_id] = game_session
+    save_game_session(game_id, game_session)
+
 
     return jsonify({
         "success": True,
@@ -309,10 +348,10 @@ def start_game():
 @app.route('/api/game/<game_id>/state', methods=['GET'])
 def get_game_state(game_id):
     """Obtém o estado atual do jogo."""
-    if game_id not in active_games:
-        return jsonify({"error": "Game not found"}), 404
+    game_session = load_game_session(game_id)
+    if not game_session:
+        return jsonify({"error": "Jogo não encontrado"}), 404
 
-    game_session = active_games[game_id]
     return jsonify(game_session.get_state_dict())
 
 
@@ -324,10 +363,10 @@ def health():
 @app.route('/api/game/<game_id>/next-turn', methods=['POST'])
 def next_turn(game_id):
     """Executa o próximo turno (bloqueia se for a vez do humano)."""
-    if game_id not in active_games:
-        return jsonify({"error": "Game not found"}), 404
+    game_session = load_game_session(game_id)
+    if not game_session:
+        return jsonify({"error": "Jogo não encontrado"}), 404
 
-    game_session = active_games[game_id]
 
     if game_session.status != "playing":
         return jsonify({"error": "Game is not in playing state"}), 400
@@ -336,6 +375,7 @@ def next_turn(game_id):
         return jsonify({"error": "Human turn - aguarde ação do jogador"}), 400
 
     success = game_session.execute_turn()
+    save_game_session(game_id, game_session)
     if success:
         return jsonify({
             "success": True,
@@ -348,13 +388,15 @@ def next_turn(game_id):
 @app.route('/api/game/<game_id>/control', methods=['POST'])
 def control_game(game_id):
     """Controla o jogo (pause, resume, etc.)."""
-    if game_id not in active_games:
-        return jsonify({"error": "Game not found"}), 404
+    game_session = load_game_session(game_id)
+    if not game_session:
+        return jsonify({"error": "Jogo não encontrado"}), 404
+
 
     data = request.get_json() or {}
     action = data.get('action')
 
-    game_session = active_games[game_id]
+
 
     if action == 'pause':
         game_session.status = "paused"
@@ -368,6 +410,7 @@ def control_game(game_id):
         if speed in ['slow', 'normal', 'fast']:
             game_session.speed = speed
 
+    save_game_session(game_id, game_session)
     return jsonify({
         "success": True,
         "state": game_session.get_state_dict()
@@ -377,10 +420,15 @@ def control_game(game_id):
 @app.route('/api/games', methods=['GET'])
 def list_games():
     """Lista todos os jogos ativos."""
+    # Lista todas as chaves de jogos no Redis
     games_list = []
-    for game_id, session in active_games.items():
+    for key in redis_client.keys("game:*"):
+        data = redis_client.get(key)
+        if not data:
+            continue
+        session = pickle.loads(data)
         games_list.append({
-            "game_id": game_id,
+            "game_id": session.game_id,
             "status": session.status,
             "round": session.round_number,
             "created_at": session.created_at.isoformat()
@@ -430,10 +478,11 @@ def general_chat():
 @app.route('/api/game/<game_id>/analyze-move', methods=['POST'])
 def analyze_move(game_id):
     """Analisa a última jogada usando IA com Teoria dos Jogos."""
-    if game_id not in active_games:
-        return jsonify({"error": "Game not found"}), 404
+    game_session = load_game_session(game_id)
+    if not game_session:
+        return jsonify({"error": "Jogo não encontrado"}), 404
 
-    game_session = active_games[game_id]
+
 
     if not game_session.game_state:
         return jsonify({"error": "Game not initialized"}), 400
@@ -482,10 +531,12 @@ def player_action():
     action = data.get('action')
     params = data.get('params', {}) or {}
 
-    if not game_id or game_id not in active_games:
+    game_session = load_game_session(game_id)
+    if not game_session:
         return jsonify({"error": "Jogo não encontrado"}), 404
 
-    game_session = active_games[game_id]
+
+
     if not game_session.is_human_turn():
         return jsonify({"error": "Não é a vez do humano"}), 400
 
@@ -593,6 +644,7 @@ def player_action():
             game_session.status = "finished"
             game_session.last_action["winner"] = vencedor
 
+        save_game_session(game_id, game_session)
         game_session._save_state_to_history()
         return jsonify({"success": True, "state": game_session.get_state_dict()})
 
@@ -609,15 +661,17 @@ def player_end_turn():
     data = request.get_json() or {}
     game_id = data.get('game_id')
 
-    if not game_id or game_id not in active_games:
+    game_session = load_game_session(game_id)
+    if not game_session:
         return jsonify({"error": "Jogo não encontrado"}), 404
 
-    game_session = active_games[game_id]
+
     if not game_session.is_human_turn():
         return jsonify({"error": "Não é a vez do humano"}), 400
 
     game_session._next_player()
     game_session._save_state_to_history()
+    save_game_session(game_id, game_session)
     return jsonify({"success": True, "state": game_session.get_state_dict()})
 
 # ----------------------------------------------------------------------

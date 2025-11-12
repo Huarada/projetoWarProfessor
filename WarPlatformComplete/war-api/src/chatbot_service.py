@@ -82,7 +82,9 @@ Sua resposta deve ser clara, educativa e acessível, evitando jargões técnicos
 Use analogias simples quando possível (por exemplo, comparar defender um território a “fortalecer uma região antes de atacar”). 
 Não use mais de 300 palavras.
 
-Termine a explicação com uma breve reflexão ou pergunta guiada que estimule o aluno a pensar sobre o que faria diferente naquela situação.
+Finalize sua análise com uma breve conclusão profissional e estratégica, resumindo o que poderia ser otimizado na jogada. 
+Evite perguntas diretas ao jogador. Use um tom analítico e objetivo, semelhante ao de um relatório tático.
+
 
 Atenção:
 - Use apenas as informações da seção "Jogada analisada" para identificar quem executou a jogada.
@@ -99,12 +101,34 @@ Jogada analisada:
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4.1-mini",  # Usando modelo suportado
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.7
+            model="gpt-4o-mini",  # modelo mais estável e eficiente
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Você é o General WAR, um estrategista divertido e didático. "
+                        "Sempre conclua seu raciocínio antes de encerrar a resposta, "
+                        "mantendo coerência e completude. "
+                        "Evite deixar frases inacabadas, mesmo que precise encurtar o texto."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=900,        #  aumenta o espaço para respostas longas
+            temperature=0.7,
+            presence_penalty=0.1,  #  evita repetições
+            frequency_penalty=0.2  #  melhora fluidez e evita redundâncias
         )
-        return response.choices[0].message.content
+
+        # Se o modelo parar abruptamente, tenta extrair o texto bruto completo
+        reply = response.choices[0].message.content.strip()
+
+        # Correção extra: se a última frase terminar sem pontuação, adicione reticências
+        if reply and reply[-1] not in ".!?":
+            reply += "..."
+
+        return reply
+
     except Exception as e:
         return f"Erro ao analisar jogada: {str(e)}. Verifique se a chave da API OpenAI está configurada corretamente."
 

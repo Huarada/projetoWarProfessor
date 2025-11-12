@@ -71,4 +71,11 @@
   /* Estes dois @apply exigiam os tokens acima */
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
+  
+  /* alteracoes para o layout mobile ficar contido nas predefinicoes da pagina */
+  html, body {
+  overflow-x: hidden;
+  width: 100%;
+  }
+
 }

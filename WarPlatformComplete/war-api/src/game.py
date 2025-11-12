@@ -156,32 +156,56 @@ class GameLogic:
         return jogadas
     
     @staticmethod
+    def calcular_probabilidade_vitoria(tropas_atacante: int, tropas_defensor: int) -> float:
+        """
+        Calcula a probabilidade de vitória do atacante com base na razão de tropas.
+        Retorna valor entre 0.1 e 0.9 (10% a 90% de chance).
+        """
+        if tropas_atacante <= 1:
+            return 0.0  # não pode atacar
+
+        # razão entre tropas, suavizada
+        chance = 1 / (1 + (tropas_defensor / tropas_atacante) ** 1.5)
+
+        # limitar chance entre 10% e 90%
+        return max(0.1, min(0.9, chance))
+    
+
+    @staticmethod
     def executar_ataque(game_state, origem, destino):
-        """Executa um ataque entre dois territórios."""
+        """Executa um ataque entre dois territórios de forma probabilística."""
         tropas_atacante = game_state.territorios[origem]['tropas']
         tropas_defensor = game_state.territorios[destino]['tropas']
         dono_defensor = game_state.territorios[destino]['dono']
-        
-        if tropas_atacante > tropas_defensor:
-            # Ataque bem-sucedido
-            # Punição reduzida: atacante perde apenas 20% das tropas do defensor
-            perda = int(round(tropas_defensor * 0.2))
+
+        if tropas_atacante <= 1:
+            return False
+
+        # Calcula probabilidade de vitória
+        chance_vitoria = GameLogic.calcular_probabilidade_vitoria(tropas_atacante, tropas_defensor)
+
+        # Decide com base em sorteio
+        sucesso = random.random() < chance_vitoria
+
+        if sucesso:
+            # Vitória: atacante ocupa território
+            perda = int(round(tropas_defensor * random.uniform(0.1, 0.3)))  # perda de 10% a 30%
             tropas_restantes = tropas_atacante - perda
             tropas_movidas = max(1, tropas_restantes - 1)
-            
-            # Atualizar territórios
+
+            # Atualiza territórios
             game_state.territorios[destino]['dono'] = game_state.territorios[origem]['dono']
             game_state.territorios[destino]['tropas'] = tropas_movidas
             game_state.territorios[origem]['tropas'] = 1
-            
-            # Marcar que o defensor perdeu território
+
             game_state.historico_perdas[dono_defensor] = True
-            
             return True
         else:
-            # Ataque falhou - atacante perde 1 tropa
-            game_state.territorios[origem]['tropas'] -= 1
+            # Derrota: atacante perde entre 10% e 40% de suas tropas
+            perda = int(round(tropas_atacante * random.uniform(0.1, 0.4)))
+            game_state.territorios[origem]['tropas'] = max(1, tropas_atacante - perda)
             return False
+
 
     @staticmethod
     def adicionar_tropas(game_state, jogador_id, territorio, qtd):
