@@ -11,13 +11,18 @@ import os
 import pickle
 from redis import Redis
 
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
+REDIS_SSL = os.environ.get("REDIS_SSL", "true").lower() == "true"
+
 redis_client = Redis(
-    host=os.environ.get("REDIS_HOST", "localhost"),
-    port=int(os.environ.get("REDIS_PORT", 6379)),
-    password=os.environ.get("REDIS_PASS", None),
-    ssl=os.environ.get("REDIS_SSL", "false").lower() == "true" and not os.environ.get("LOCAL_DEV"),
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    ssl=REDIS_SSL,
     decode_responses=False
 )
+
+
 
 
 # Importar módulos do jogo WAR
