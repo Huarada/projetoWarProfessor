@@ -587,6 +587,10 @@ def player_action():
             GameLogic.adicionar_tropas(gs, player_id, territorio, qtd)
             game_session.game_state.tropas_disponiveis[player_id] -= qtd
 
+            # FIX CRÍTICO (persistência antes de responder)
+            game_session._save_state_to_history()
+            save_game_session(game_id, game_session)
+
             # Retorna estado completo e mensagem amigável
             return jsonify({
                 "message": f"Tropas colocadas em {territorio}. "
@@ -594,6 +598,7 @@ def player_action():
                 "remaining": game_session.game_state.tropas_disponiveis[player_id],
                 "state": game_session.get_state_dict()
             }), 200
+
         
 
         elif action == "attack":

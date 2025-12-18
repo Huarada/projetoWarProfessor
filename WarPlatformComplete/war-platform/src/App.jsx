@@ -108,11 +108,11 @@ function App() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 id="sobrePlataforma" className="text-4xl font-bold text-gray-900 mb-8">Sobre a Plataforma</h2>
           <div className="text-gray-700 space-y-4 text-left">
-            <p>Este site é parte do Trabalho de Conclusão de Curso (TCC) de Lucas Harada na POLI-USP, orientado pelo Prof. Márcio Lobo Neto. O objetivo do projeto é tornar o ensino de estratégia e Teoria dos Jogos mais acessível, prático e divertido, utilizando o jogo WAR como ferramenta.</p>
+            <p>Este site integra o Trabalho de Conclusão de Curso (TCC) de Lucas Harada na Escola Politécnica da USP, orientado pelo Prof. Márcio Lobo Netto. A plataforma utiliza o jogo de tabuleiro WAR como referência didática para ensino de estratégia e Teoria dos Jogos. WAR é uma marca de titularidade de seus respectivos proprietários. Este projeto é independente, não oficial e não possui afiliação, patrocínio ou endosso da GROW. Os elementos visuais e o software apresentados foram desenvolvidos pelo autor, com uso de materiais originais e/ou genéricos.</p>
             <p>O projeto nasceu a partir da falta de recursos lúdicos para explicar conceitos estratégicos de forma aplicada. A plataforma permite que estudantes, professores e entusiastas do jogo tenham acesso a um agente autônomo de IA, que utiliza Algoritmos Genéticos para treinar sua estratégia ao longo do tempo.</p>
             <p>Além da experiência de jogo, o agente explica suas jogadas e escolhas utilizando processamento de linguagem natural (NLP), tornando o aprendizado mais transparente e interativo.</p>
             <p>O código do agente será disponibilizado como open-source sob licença MIT, permitindo liberdade de uso e adaptação, sem responsabilidade do autor por usos indevidos.</p>
-            <p>Este site é gratuito para uso educacional, com possibilidade de planos premium para funcionalidades avançadas. Acreditamos que o ensino de estratégia deve ser acessível, lúdico e envolvente para todos.</p>
+            <p>Este site é gratuito para uso educacional. Acreditamos que o ensino de estratégia deve ser acessível, lúdico e envolvente para todos.</p>
           </div>
         </div>
       </section>
